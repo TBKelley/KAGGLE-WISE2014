@@ -9,8 +9,8 @@ cpuCore <- 4 # Number of CPU Codes
 batchSize <- 1000 # Number of training rows
 answerUNC <- "Answer/submission_%5.3f.csv"
 
-#system.time(X.train.all <- read.matrix.csr("Data/wise2014-train.libsvm.txt")$x)[3]  # 197.2 MB RAM, 172 Sec
-#system.time(y.train.all.labels.factor <- read.matrix.csr("Data/wise2014-train.libsvm.txt")$y)[3] #   0.5 MB RAM, 185 Sec
+system.time(X.train.all <- read.matrix.csr("Data/wise2014-train.libsvm.txt")$x)[3]  # 197.2 MB RAM, 172 Sec
+system.time(y.train.all.labels.factor <- read.matrix.csr("Data/wise2014-train.libsvm.txt")$y)[3] #   0.5 MB RAM, 185 Sec
 system.time(X.test <- read.matrix.csr("Data/wise2014-test.libsvm.txt")$x)[3]    # 108.7 MB RAM,  56 Sec  [64858:99780]
 
 trainBatchUNC <- "Data/wise2014-train_Batch.libsvm.txt"
@@ -40,7 +40,7 @@ y.cross.labels.string <- paste(",", as.character(y.cross.labels.factor), ",", se
 
 modle.name <- "svm"
 score.cross.table <- table(c("FALSE","TRUE"), c("FALSE","TRUE"), dnn=c("Predicted", "Reference")) * 0
-answers <- rep("", length(y.train.labels.factor))
+answers <- rep("", dim(X.test)[1])
 
 # library(doParallel)
 # cluster <- makeCluster(cpuCore)
