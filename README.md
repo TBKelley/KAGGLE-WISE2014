@@ -14,17 +14,17 @@ Download Training and Test data<br/>
 <br/>
 Folder structure<br/>
 KAGGLE-WISE2014<br/>
-	writeAnswer.R    - Create a submission file<br/>
-	score.r          - Calculate F1 score<br/>
-	processLabelBySVM_linear.R - doPar pay load<br/>
-	wise2014_svm_V01.R<br/>
-	wise2014_svm_V02.R<br/>
-	wise2014_svm_V03.R<br/>
+&nbsp;&nbsp;writeAnswer.R    - Create a submission file<br/>
+&nbsp;&nbsp;score.r          - Calculate F1 score<br/>
+&nbsp;&nbsp;processLabelBySVM_linear.R - doPar pay load<br/>
+&nbsp;&nbsp;wise2014_svm_V01.R<br/>
+&nbsp;&nbsp;wise2014_svm_V02.R<br/>
+&nbsp;&nbsp;wise2014_svm_V03.R<br/>
 KAGGLE-WISE2014\Data<br/>
-	wise2014-test.libsvm.txt<br/>
-	wise2014-train.libsvm.txt<br/>
+&nbsp;&nbsp;wise2014-test.libsvm.txt<br/>
+&nbsp;&nbsp;wise2014-train.libsvm.txt<br/>
 KAGGLE-WISE2014\Answer<br/>
-	sampleSubmission.csv<br/>
+&nbsp;&nbsp;sampleSubmission.csv<br/>
 KAGGLE-WISE2014\Model<br/>
 
 ## How to run
