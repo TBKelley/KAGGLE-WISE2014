@@ -6,9 +6,9 @@ library(doParallel)
 library(foreach)
 source("writeAnswer.R")
 source("score.R")
-source("processLabelBySVM_linear.R")
+source("processLabelBySVM_radial.R")
 
-run.name <- "svm_linear"
+run.name <- "svm_radial"
 cpuCore <- 3 # Number of CPU Codes
 trainPercent <- 0.3 # Percent of wise2014-train.libsvm.txt used for training, the rest will be for CV
 label.block.size <- 16 # Number of training fits to run in parallel without feed back.
@@ -46,7 +46,7 @@ for (label.block.start in label.seq) {
 
     label.subResults <- foreach (label=label.subSeq, .combine=rbind, .packages=packages) %dopar% {
         set.seed(42)
-        label.elapse.seconds <- system.time(results <- processLabelBySVM_linear(logUNC, label, trainPercent, y.train.all.labels.string, X.train.all, X.test))[3]
+        label.elapse.seconds <- system.time(results <- processLabelBySVM_radial(logUNC, label, trainPercent, y.train.all.labels.string, X.train.all, X.test))[3]
         list(results, label.elapse.seconds)
     }
     
@@ -59,7 +59,7 @@ for (label.block.start in label.seq) {
         score.cross.label.table <- label.subResults[index][[1]][[5]]
         label.elapse.seconds <- label.subResults[index, 2][[1]]
 
-        label.name <- paste("", as.character(label)) # Example: " 32"    
+        label.name <- paste("", as.character(label)) # Example: " 32"           
         answers <- paste(answers, ifelse(y.test.predict == "TRUE", label.name, ""), sep="")
 
         # Calculate mean F1 Score estimate
@@ -82,7 +82,6 @@ for (label.block.start in label.seq) {
         sink()        
     }     
 }
-
 stopCluster(cluster)
 
 F1.mean <- score(score.cross.table)
@@ -96,8 +95,6 @@ cat(sprintf("%s %s: F1.mean=%6.4f\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), r
 print(confusionMatrix(score.cross.table, positive='TRUE'))
 cat(sprintf("%s %s:Write: %s \n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), run.name, sprintf(answerUNC, F1.mean)))
 sink()   
-
-
 
 sprintf("FINISHED")
 sink(logUNC, append=TRUE)
