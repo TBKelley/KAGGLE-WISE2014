@@ -3,6 +3,7 @@ library(rpart)
 library(SparseM) # matrix.csr
 library(caret)
 source("score.R")
+source("createConfusionMatrix.R")
 
 processLabelBySVM_linear_threshold <- function(logUNC, label, trainPercent, y.train.all.labels.string, X.train.all, X.test, threshold) {
     model.name <- sprintf("smv_%.0f", threshold * 100.0)
@@ -31,16 +32,16 @@ processLabelBySVM_linear_threshold <- function(logUNC, label, trainPercent, y.tr
     X.cross <- X.train.all[-indexTrain, ]
 
     cost = 1 # Regularisation penalty
-    tolerance = 0.001
+    tolerance = 0.01
     
     sink(logUNC, append=TRUE)
-    cat(sprintf("%s %s(%d): label=%d cost=%.1f tolerance=%.3f - Start\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), model.name, pid, label, cost, tolerance))
+    cat(sprintf("%s %s(%d): label=%d cost=%.1f tolerance=%.3f threshold=%.2f - Start\n", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), model.name, pid, label, cost, tolerance, threshold))
     sink()
     
     weights <- "No weights"
     if (y.train.int.sum == 0) { # All training = FALSE
-        score.cross.label.table <- table(c("FALSE","TRUE"), c("FALSE","TRUE"), dnn=c("Predicted", "Reference")) * 0
-        score.cross.label.table[1,1] <- length(y.train.bool.factor) # TN
+        score.cross.label.table <- createConfusionMatrix(c("FALSE","TRUE"), c("FALSE","TRUE"), "SVM Cross") * 0
+        score.cross.label.table["FALSE","FALSE"] <- length(y.train.bool.factor) # TN
         y.test.predict <- as.factor(rep("FLASE", dim(X.train)[1]))
     } else {
         set.seed(42)
@@ -69,8 +70,8 @@ processLabelBySVM_linear_threshold <- function(logUNC, label, trainPercent, y.tr
         y.test.prob <- attr(y.test.predict_50, "probabilities")[,"TRUE"]
         y.test.predict <- (y.test.prob >= threshold)
         
-        score.train.label.table <- table(Predicted=y.train.predict, Reference=y.train.bool.factor, dnn=c("", "SVM Train")) # TP=[2,2], TN=[1,1], FP=[2,1], FN=[1,2]
-        score.cross.label.table <- table(Predicted=y.cross.predict, Reference=y.cross.bool.factor, dnn=c("", "SVM Cross")) # TP=[2,2], TN=[1,1], FP=[2,1], FN=[1,2]
+        score.train.label.table <- createConfusionMatrix(Predicted=y.train.predict, Reference=y.train.bool.factor, Title="SVM Train")
+        score.cross.label.table <- createConfusionMatrix(Predicted=y.cross.predict, Reference=y.cross.bool.factor, Title="SVM Cross")
     }
     train.F1 <- score(score.train.label.table)
     cross.F1 <- score(score.cross.label.table)
